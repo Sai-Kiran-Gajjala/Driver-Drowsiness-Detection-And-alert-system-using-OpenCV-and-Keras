@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Drowsiness Detection and Alert System with OpenCV & Keras</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px 0;
+	  font-size: 15px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .video-container {
+      width: 320px; /* Adjust the width as needed */
+      margin-bottom: 20px;
+    }
+
+    .video-container img {
+      width: 100%;
+      border: 2px solid #333;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px; /* Adjust the width as needed */
+      height: 150px; /* Adjust the height as needed */
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+
+    .popup h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .popup button {
+      background-color: #333;
+      color: #fff;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Drowsiness Detection System</h1>
+  </header>
+
+  <div class="container">
+    <div class="video-container">
+      <img id="video-feed" src="{{ url_for('video_feed') }}">
+    </div>
+    <div class="popup" id="drowsinessAlert">
+      <h3>Driver Drowsiness Detected!</h3>
+      <button id="closePopup">OK</button>
+    </div>
+    <!-- Empty div for displaying date and time -->
+    <div id="dateTime"></div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Drowsiness Detection System</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js" integrity="sha384-jvAibb0P2RdxcwmpFXTvXnAeK56b3pT61jR/yS/tNH0B17LI/zXslXi5ytsi3PWe" crossorigin="anonymous"></script>
+  <script>
+    var drowsinessAlert = document.getElementById("drowsinessAlert");
+    var closePopupBtn = document.getElementById("closePopup");
+
+    closePopupBtn.addEventListener("click", function() {
+      drowsinessAlert.style.display = "none";
+    });
+
+    function updateDateTime() {
+      var now = new Date();
+      var dateTimeString = now.toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
+      document.getElementById('dateTime').innerText = dateTimeString;
+    }
+    // Update date and time every second
+    setInterval(updateDateTime, 1000);
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('alert', function(data) {
+      // Show the popup alert window
+      drowsinessAlert.style.display = "block";
+    });
+  </script>
+</body>
+</html>
+
